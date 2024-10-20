@@ -17,14 +17,26 @@ logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
-# Обработка команды /start
-@dp.message(F.text == "/start")
+bot = Bot(token=API_TOKEN)
+dp = Dispatcher()
+
+@dp.message(commands=['start'])
 async def send_start_message(message: types.Message):
-    button = InlineKeyboardButton(text="Открыть", url="https://www.youtube.com/watch?v=9AjobrCCle8&list=TLPQMTgxMDIwMjRpwNOEBaSpCg", disable_web_page_preview=True)
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[[button]])
+    await message.answer("Откройте мини-приложение!",
+                         reply_markup=types.ReplyKeyboardMarkup(
+                             keyboard=[
+                                 [types.KeyboardButton(text="Запустить Mini-App",
+                                                       request_contact=False)]
+                             ],
+                             resize_keyboard=True))
 
-    await message.answer("Добро пожаловать! Нажмите на кнопку ниже для открытия мини-приложения.", disable_web_page_preview=True, reply_markup=keyboard)
-
+@dp.message_handler(lambda message: message.text == "Запустить Mini-App")
+async def open_web_app(message: types.Message):
+    web_app_url = "https://your-web-app-url.com"  # Вставьте ваш URL
+    await message.answer("Открываю мини-приложение...",
+                         reply_markup=types.InlineKeyboardMarkup().add(
+                             types.InlineKeyboardButton("Открыть", web_app=web_app_url)
+                         ))
 # Запуск бота
 async def main() -> None:
     logging.info("Bot is starting...")
