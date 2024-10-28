@@ -20,7 +20,7 @@
 
     <div id="profileContent" class="hidden">
         <h2>Профиль пользователя</h2>
-        <p>Здесь будет информация о пользователе.</p>
+        <p id="userName">Здесь будет информация о пользователе.</p>
         <button id="backButton">Назад</button>
     </div>
 
@@ -29,6 +29,7 @@
 
         // Обработчик нажатия на кнопку профиля
         document.getElementById('profileButton').onclick = function() {
+            tg.sendData("open_profile"); // Запрос данных о профиле
             document.getElementById('mainContent').classList.add('hidden');
             document.getElementById('profileContent').classList.remove('hidden');
         };
@@ -38,6 +39,12 @@
             document.getElementById('profileContent').classList.add('hidden');
             document.getElementById('mainContent').classList.remove('hidden');
         };
+
+        // Получение данных пользователя
+        tg.onEvent('data', (data) => {
+            const userInfo = JSON.parse(data); // Преобразуем данные из JSON
+            document.getElementById('userName').innerText = `Имя: ${userInfo.full_name}`; // Выводим имя пользователя
+        });
     </script>
 </body>
 </html>

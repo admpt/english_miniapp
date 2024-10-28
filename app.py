@@ -1,3 +1,4 @@
+import json
 import logging
 import sys
 
@@ -10,8 +11,10 @@ from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.filters import Command
 import asyncio
 
+from sqlalchemy import select
+
 from database import User, get_async_session
-from token import TOKEN
+from my_token import TOKEN
 
 API_TOKEN = TOKEN
 # Настройка логирования
@@ -40,7 +43,7 @@ async def process_start_command(message: types.Message, referral_code: str, stat
     logging.info(f"process_start_command {message.from_user.id}")
     logging.info(f"Referral code: {referral_code}")
 
-    web_app_url = "https://admpt.github.io/test-mini-app/"
+    web_app_url = "https://admpt.github.io/mini-app/"
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Открыть", web_app={"url": web_app_url})]
     ])
@@ -66,9 +69,9 @@ async def process_start_command(message: types.Message, referral_code: str, stat
 
 
 async def upsert_user(user_id: int, username_tg: str, full_name: str, referral_code: str = None) -> None:
+    logging.info(f"Attempting to upsert user: {user_id}")
     async for session in get_async_session():
         try:
-            # Выполняем upsert
             user = await session.get(User, user_id)
             if user:
                 user.username_tg = username_tg
@@ -85,6 +88,27 @@ async def upsert_user(user_id: int, username_tg: str, full_name: str, referral_c
         except Exception as e:
             logging.error(f"Database error while upserting user: {e}")
             await session.rollback()  # Откатываем сессию при ошибке
+
+async def get_user_data(user_id: int) -> User:
+    async with get_async_session() as session:
+        result = await session.execute(select(User).where(User.id == user_id))
+        user = result.scalars().first()
+        return user
+
+@dp.message(Command("open_profile"))
+async def send_user_profile(message: types.Message):
+    user_id = message.from_user.id
+    user_data = await get_user_data(user_id)
+
+    if user_data:
+        user_info = {
+            "full_name": user_data.full_name,
+            "balance": user_data.balance
+        }
+        # Отправка данных обратно в веб-приложение
+        await bot.send_message(user_id, json.dumps(user_info))
+    else:
+        await message.answer("Пользователь не найден.")
 
 # Запуск бота
 async def main() -> None:

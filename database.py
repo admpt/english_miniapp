@@ -19,7 +19,7 @@ class User(Base):
     referred_by = Column(Integer, ForeignKey('users.id'))
     elite_start_date = Column(TIMESTAMP)
 
-DATABASE_URL = "postgresql+asyncpg://postgres:your_password@localhost:5432/english_miniapp"
+DATABASE_URL = "postgresql+asyncpg://postgres:121212@localhost:5432/english_miniapp"
 
 # Создаем асинхронный движок
 engine = create_async_engine(DATABASE_URL, echo=True)
