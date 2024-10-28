@@ -5,37 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mini-App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="static/style.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-image: url('https://img3.akspic.ru/crops/3/8/2/7/7/177283/177283-anime-v_dayz_anime-multik-ryomen_ego_nogi-yudzi_itadori-1080x1920.jpg');
-            background-size: cover;
-            background-position: center;
-            color: white; /* Цвет текста для контраста */
-        }
-        button {
-            padding: 10px;
-            margin: 10px;
-            background-color: rgba(0, 0, 0, 0.7); /* Полупрозрачный фон кнопки */
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: rgba(255, 255, 255, 0.3); /* Эффект при наведении */
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <h1>English Nova</h1>
-    <button id="action">Выполнить действие</button>
+    <div id="mainContent">
+        <h1>English Nova</h1>
+        <button id="profileButton">Профиль</button>
+    </div>
+
+    <div id="profileContent" class="hidden">
+        <h2>Профиль пользователя</h2>
+        <p>Здесь будет информация о пользователе.</p>
+        <button id="backButton">Назад</button>
+    </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        document.getElementById('action').onclick = function() {
-            tg.sendData("Данные от мини-приложения");
+
+        // Обработчик нажатия на кнопку профиля
+        document.getElementById('profileButton').onclick = function() {
+            document.getElementById('mainContent').classList.add('hidden');
+            document.getElementById('profileContent').classList.remove('hidden');
+        };
+
+        // Обработчик нажатия на кнопку "Назад"
+        document.getElementById('backButton').onclick = function() {
+            document.getElementById('profileContent').classList.add('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
         };
     </script>
 </body>

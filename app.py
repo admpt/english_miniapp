@@ -11,8 +11,9 @@ from aiogram.filters import Command
 import asyncio
 
 from database import User, get_async_session
+from token import TOKEN
 
-API_TOKEN = '7094389168:AAH54gBQDqxxLGDT4FxdSJo3jesLcMKVS3o'
+API_TOKEN = TOKEN
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
@@ -84,6 +85,7 @@ async def upsert_user(user_id: int, username_tg: str, full_name: str, referral_c
         except Exception as e:
             logging.error(f"Database error while upserting user: {e}")
             await session.rollback()  # Откатываем сессию при ошибке
+
 # Запуск бота
 async def main() -> None:
     logging.info("Bot is starting...")
