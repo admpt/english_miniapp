@@ -20,7 +20,7 @@
 
     <div id="profileContent" class="hidden">
         <h2>Профиль пользователя</h2>
-        <p id="userName">Здесь будет информация о пользователе.</p>
+        <p id="userName">Имя: здесь будет информация о пользователе.</p> <!-- Изначально здесь текст по умолчанию -->
         <button id="backButton">Назад</button>
     </div>
 
@@ -39,6 +39,7 @@
                 document.getElementById('userName').innerText = "Не удалось получить информацию о пользователе.";
             }
 
+            // Скрываем основной контент и показываем профиль
             document.getElementById('mainContent').classList.add('hidden');
             document.getElementById('profileContent').classList.remove('hidden');
         };
@@ -50,4 +51,3 @@
         };
     </script>
 </body>
-</html>
