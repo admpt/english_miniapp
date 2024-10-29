@@ -95,20 +95,15 @@ async def get_user_data(user_id: int) -> User:
         user = result.scalars().first()
         return user
 
-@dp.message(Command("open_profile"))
-async def send_user_profile(message: types.Message):
-    user_id = message.from_user.id
-    user_data = await get_user_data(user_id)
-
+@dp.get("/user")
+async def get_user(user_id: int):
+    user_data = await get_user_data(user_id)  # Предполагается, что эта функция возвращает объект User
     if user_data:
-        user_info = {
+        return {
             "full_name": user_data.full_name,
-            "balance": user_data.balance
+            "balance": user_data.balance  # Другие данные, если нужно
         }
-        # Отправка данных обратно в веб-приложение
-        await bot.send_message(user_id, json.dumps(user_info))
-    else:
-        await message.answer("Пользователь не найден.")
+    return JSONResponse(content={"error": "Пользователь не найден."}, status_code=404)
 
 # Запуск бота
 async def main() -> None:

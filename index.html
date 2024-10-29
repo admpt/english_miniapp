@@ -28,8 +28,17 @@
         const tg = window.Telegram.WebApp;
 
         // Обработчик нажатия на кнопку профиля
-        document.getElementById('profileButton').onclick = function() {
-            tg.sendData("open_profile"); // Запрос данных о профиле
+        document.getElementById('profileButton').onclick = async function() {
+            const userId = tg.initDataUnsafe.user.id; // Получите ID пользователя из Telegram Web App
+            const response = await fetch(`/user?user_id=${userId}`); // Запрос данных о пользователе
+
+            if (response.ok) {
+                const userInfo = await response.json();
+                document.getElementById('userName').innerText = `Имя: ${userInfo.full_name}`; // Выводим имя пользователя
+            } else {
+                document.getElementById('userName').innerText = "Не удалось получить информацию о пользователе.";
+            }
+
             document.getElementById('mainContent').classList.add('hidden');
             document.getElementById('profileContent').classList.remove('hidden');
         };
@@ -39,12 +48,6 @@
             document.getElementById('profileContent').classList.add('hidden');
             document.getElementById('mainContent').classList.remove('hidden');
         };
-
-        // Получение данных пользователя
-        tg.onEvent('data', (data) => {
-            const userInfo = JSON.parse(data); // Преобразуем данные из JSON
-            document.getElementById('userName').innerText = `Имя: ${userInfo.full_name}`; // Выводим имя пользователя
-        });
     </script>
 </body>
 </html>
