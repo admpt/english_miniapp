@@ -25,8 +25,12 @@ DATABASE_URL = "postgresql+asyncpg://postgres:121212@localhost:5432/english_mini
 engine = create_async_engine(DATABASE_URL, echo=True)
 
 # Создаем фабрику для асинхронных сессий
-AsyncSessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
+async_session = sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+)
 
-async def get_async_session():
-    async with AsyncSessionLocal() as session:
+async def get_async_session() -> AsyncSession:
+    async with async_session() as session:
         yield session

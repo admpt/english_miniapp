@@ -20,34 +20,54 @@
 
     <div id="profileContent" class="hidden">
         <h2>Профиль пользователя</h2>
-        <p id="userName">Имя: здесь будет информация о пользователе.</p> <!-- Изначально здесь текст по умолчанию -->
+        <p id="userName">Имя: здесь будет информация о пользователе.</p>
         <button id="backButton">Назад</button>
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp;
+        document.addEventListener("DOMContentLoaded", function() {
+            const tg = window.Telegram.WebApp;
 
-        // Обработчик нажатия на кнопку профиля
-        document.getElementById('profileButton').onclick = async function() {
-            const userId = tg.initDataUnsafe.user.id; // Получите ID пользователя из Telegram Web App
-            const response = await fetch(`/user?user_id=${userId}`); // Запрос данных о пользователе
+            // Обработчик нажатия на кнопку профиля
+            document.getElementById('profileButton').onclick = async function() {
+                console.log("Кнопка 'Профиль' нажата.");
+                const userId = tg.initDataUnsafe.user.id;
+                console.log("ID пользователя:", userId);
 
-            if (response.ok) {
-                const userInfo = await response.json();
-                document.getElementById('userName').innerText = `Имя: ${userInfo.full_name}`; // Выводим имя пользователя
-            } else {
-                document.getElementById('userName').innerText = "Не удалось получить информацию о пользователе.";
-            }
+                if (!userId) {
+                    document.getElementById('userName').innerText = "ID пользователя не найден.";
+                    return;
+                }
 
-            // Скрываем основной контент и показываем профиль
-            document.getElementById('mainContent').classList.add('hidden');
-            document.getElementById('profileContent').classList.remove('hidden');
-        };
+                try {
+                    const response = await fetch(`/user?user_id=${userId}`);
 
-        // Обработчик нажатия на кнопку "Назад"
-        document.getElementById('backButton').onclick = function() {
-            document.getElementById('profileContent').classList.add('hidden');
-            document.getElementById('mainContent').classList.remove('hidden');
-        };
+                    console.log("Response status:", response.status); // Статус ответа
+
+                    if (response.ok) {
+                        const userInfo = await response.json();
+                        console.log("User info:", userInfo); // Данные пользователя
+                        document.getElementById('userName').innerText = `Имя: ${userInfo.full_name}`;
+                    } else {
+                        document.getElementById('userName').innerText = "Не удалось получить информацию о пользователе.";
+                    }
+                } catch (error) {
+                    console.error("Ошибка при получении данных пользователя:", error);
+                    document.getElementById('userName').innerText = "Произошла ошибка при получении информации о пользователе.";
+                }
+
+                // Скрываем основной контент и показываем профиль
+                document.getElementById('mainContent').classList.add('hidden');
+                document.getElementById('profileContent').classList.remove('hidden');
+            };
+
+            // Обработчик нажатия на кнопку "Назад"
+            document.getElementById('backButton').onclick = function() {
+                document.getElementById('profileContent').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+                document.getElementById('userName').innerText = "Имя: здесь будет информация о пользователе.";
+            };
+        });
     </script>
 </body>
+</html>

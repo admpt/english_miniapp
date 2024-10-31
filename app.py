@@ -9,6 +9,7 @@ from fastapi.templating import Jinja2Templates
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.filters import Command
+from fastapi import FastAPI, HTTPException
 import asyncio
 
 from sqlalchemy import select
@@ -90,21 +91,24 @@ async def upsert_user(user_id: int, username_tg: str, full_name: str, referral_c
             await session.rollback()  # Откатываем сессию при ошибке
 
 async def get_user_data(user_id: int) -> User:
-    async with get_async_session() as session:
+    async for session in get_async_session():
         result = await session.execute(select(User).where(User.id == user_id))
         user = result.scalars().first()
         return user
 
-@dp.get("/user")
+app = FastAPI()
+
+@app.get("/user")
 async def get_user(user_id: int):
-    user_data = await get_user_data(user_id)  # Предполагается, что эта функция возвращает объект User
+    logging.info(f"Received request for user ID: {user_id}")
+    user_data = await get_user_data(user_id)
     if user_data:
+        logging.info(f"User found: {user_data.full_name}")
         return {
             "full_name": user_data.full_name,
-            "balance": user_data.balance  # Другие данные, если нужно
         }
-    return JSONResponse(content={"error": "Пользователь не найден."}, status_code=404)
-
+    logging.warning(f"No user found with ID: {user_id}")
+    raise HTTPException(status_code=404, detail="User not found")
 # Запуск бота
 async def main() -> None:
     logging.info("Bot is starting...")
