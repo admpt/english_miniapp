@@ -29,10 +29,17 @@
     let profileButton = document.getElementById("profileButton");
 
     profileButton.addEventListener("click", () => {
+        console.log(tg.initDataUnsafe.user); // Логируем данные пользователя
         document.getElementById("mainContent").style.display = "none";
         document.getElementById("profileContent").style.display = "block";
-        document.getElementById("user_name").innerText = tg.initDataUnsafe.user.first_name + " " + tg.initDataUnsafe.user.last_name;
+
+        // Убедитесь, что данные пользователя доступны
+        if (tg.initDataUnsafe.user) {
+            document.getElementById("user_name").innerText = tg.initDataUnsafe.user.first_name + " " + tg.initDataUnsafe.user.last_name;
+        } else {
+            document.getElementById("user_name").innerText = "Имя не доступно.";
+        }
     });
-</script>
+    </script>
 </body>
 </html>
