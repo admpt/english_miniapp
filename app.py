@@ -52,10 +52,6 @@ async def process_start_command(message: types.Message, referral_code: str, stat
 
     await message.answer("Добро пожаловать! Нажмите на кнопку ниже, чтобы открыть мини-приложение.",
                          reply_markup=keyboard)
-
-    button = InlineKeyboardButton(text="Начать обучение!", callback_data="start_learning")
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[[button]])
-
     try:
         first_name = message.from_user.first_name
         last_name = message.from_user.last_name

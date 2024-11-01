@@ -25,14 +25,14 @@
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        let profileButton = document.getElementById("profileButton")
+    let tg = window.Telegram.WebApp;
+    let profileButton = document.getElementById("profileButton");
 
-        profileButton.addEventListener("click", () => {
-            document.getElementById("mainContent").style.display = "none";
-            document.getElementById("profileContent").style.display = "block";
-            document.getElementById("user_name").value = tg.initDataUnsafe.user.first_name + " " + tg.initDataUnsafe.user.last_name;
-        })
-    </script>
+    profileButton.addEventListener("click", () => {
+        document.getElementById("mainContent").style.display = "none";
+        document.getElementById("profileContent").style.display = "block";
+        document.getElementById("user_name").innerText = tg.initDataUnsafe.user.first_name + " " + tg.initDataUnsafe.user.last_name;
+    });
+</script>
 </body>
 </html>
