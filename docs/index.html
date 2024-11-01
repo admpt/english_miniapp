@@ -27,6 +27,7 @@
     <script>
     let tg = window.Telegram.WebApp;
     let profileButton = document.getElementById("profileButton");
+    let mainContent = document.getElementById("mainContent");
 
     profileButton.addEventListener("click", () => {
         console.log(tg.initDataUnsafe.user); // Логируем данные пользователя
@@ -39,6 +40,11 @@
         } else {
             document.getElementById("user_name").innerText = "Имя не доступно.";
         }
+    });
+    backButton.addEventListener("click", () => {
+        console.log(tg.initDataUnsafe.user); // Логируем данные пользователя
+        document.getElementById("profileContent").style.display = "none";
+        document.getElementById("mainContent").style.display = "block";
     });
     </script>
 </body>
