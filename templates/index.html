@@ -33,7 +33,7 @@
         document.getElementById("mainContent").style.display = "none";
         document.getElementById("profileContent").style.display = "block";
 
-        // Убедитесь, что данные пользователя доступны
+        // Убедитесь, что данные пользователя доступны.
         if (tg.initDataUnsafe.user) {
             document.getElementById("user_name").innerText = tg.initDataUnsafe.user.first_name + " " + tg.initDataUnsafe.user.last_name;
         } else {
