@@ -13,6 +13,7 @@ from fastapi import FastAPI, HTTPException
 import asyncio
 
 from sqlalchemy import select
+from starlette.middleware.cors import CORSMiddleware
 
 from database import User, get_async_session
 from my_token import TOKEN
@@ -90,25 +91,6 @@ async def upsert_user(user_id: int, username_tg: str, full_name: str, referral_c
             logging.error(f"Database error while upserting user: {e}")
             await session.rollback()  # Откатываем сессию при ошибке
 
-async def get_user_data(user_id: int) -> User:
-    async for session in get_async_session():
-        result = await session.execute(select(User).where(User.id == user_id))
-        user = result.scalars().first()
-        return user
-
-app = FastAPI()
-
-@app.get("/user")
-async def get_user(user_id: int):
-    logging.info(f"Received request for user ID: {user_id}")
-    user_data = await get_user_data(user_id)
-    if user_data:
-        logging.info(f"User found: {user_data.full_name}")
-        return {
-            "full_name": user_data.full_name,
-        }
-    logging.warning(f"No user found with ID: {user_id}")
-    raise HTTPException(status_code=404, detail="User not found")
 # Запуск бота
 async def main() -> None:
     logging.info("Bot is starting...")

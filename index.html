@@ -20,54 +20,19 @@
 
     <div id="profileContent" class="hidden">
         <h2>Профиль пользователя</h2>
-        <p id="userName">Имя: здесь будет информация о пользователе.</p>
+        <p id="user_name"></p>
         <button id="backButton">Назад</button>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const tg = window.Telegram.WebApp;
+        let tg = window.Telegram.WebApp;
+        let profileButton = document.getElementById("profileButton")
 
-            // Обработчик нажатия на кнопку профиля
-            document.getElementById('profileButton').onclick = async function() {
-                console.log("Кнопка 'Профиль' нажата.");
-                const userId = tg.initDataUnsafe.user.id;
-                console.log("ID пользователя:", userId);
-
-                if (!userId) {
-                    document.getElementById('userName').innerText = "ID пользователя не найден.";
-                    return;
-                }
-
-                try {
-                    const response = await fetch(`/user?user_id=${userId}`);
-
-                    console.log("Response status:", response.status); // Статус ответа
-
-                    if (response.ok) {
-                        const userInfo = await response.json();
-                        console.log("User info:", userInfo); // Данные пользователя
-                        document.getElementById('userName').innerText = `Имя: ${userInfo.full_name}`;
-                    } else {
-                        document.getElementById('userName').innerText = "Не удалось получить информацию о пользователе.";
-                    }
-                } catch (error) {
-                    console.error("Ошибка при получении данных пользователя:", error);
-                    document.getElementById('userName').innerText = "Произошла ошибка при получении информации о пользователе.";
-                }
-
-                // Скрываем основной контент и показываем профиль
-                document.getElementById('mainContent').classList.add('hidden');
-                document.getElementById('profileContent').classList.remove('hidden');
-            };
-
-            // Обработчик нажатия на кнопку "Назад"
-            document.getElementById('backButton').onclick = function() {
-                document.getElementById('profileContent').classList.add('hidden');
-                document.getElementById('mainContent').classList.remove('hidden');
-                document.getElementById('userName').innerText = "Имя: здесь будет информация о пользователе.";
-            };
-        });
+        profileButton.addEventListener("click", () => {
+            document.getElementById("mainContent").style.display = "none";
+            document.getElementById("profileContent").style.display = "block";
+            document.getElementById("user_name").value = tg.initDataUnsafe.user.first_name + " " + tg.initDataUnsafe.user.last_name;
+        })
     </script>
 </body>
 </html>

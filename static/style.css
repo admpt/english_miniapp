@@ -1,16 +1,15 @@
-html, body {
+/* html, body {
       height: 100%;
-      margin: 0; /* Убирает отступы */
-}
-
+      margin: 0;
+} */
+/*
 body {
      font-family: Arial, sans-serif;
      text-align: center;
      background-image: url('https://fonetastik.com/wp-content/uploads/2024/02/zadnii-fon-189.webp');
-     /* background-image: url('https://img3.akspic.ru/crops/3/8/2/7/7/177283/177283-anime-v_dayz_anime-multik-ryomen_ego_nogi-yudzi_itadori-1080x1920.jpg');
-     */
-     background-size: cover; /* Занимает всю площадь экрана */
-     background-position: center; /* Центрирует изображение */
-     background-repeat: no-repeat; /* Не повторять изображение */
-     color: white; /* Цвет текста для контраста */
-}
+
+     background-size: cover;
+     background-position: center;
+     background-repeat: no-repeat;
+     color: white;
+} */
