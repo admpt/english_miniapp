@@ -1,18 +1,14 @@
 import json
 import logging
 import sys
-
-import uvicorn
-from aiogram.fsm.context import FSMContext
-from fastapi import FastAPI, Request, Depends
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-from aiogram import Bot, Dispatcher, F, types
-from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
-from aiogram.filters import Command
-from fastapi import FastAPI, HTTPException
 import asyncio
 
+import uvicorn
+from aiogram import Bot, Dispatcher, types
+from aiogram.fsm.context import FSMContext
+from aiogram.filters import Command
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from fastapi import FastAPI, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.middleware.cors import CORSMiddleware
@@ -21,6 +17,7 @@ from database import User, get_async_session
 from my_token import TOKEN
 
 API_TOKEN = TOKEN
+
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
@@ -28,6 +25,17 @@ logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
+# Инициализация FastAPI
+app = FastAPI()
+
+# Настройка CORS, если необходимо
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Замените на ваши домены при необходимости
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Обработка команды /start
 @dp.message(Command("start"))
@@ -39,7 +47,6 @@ async def send_start_message(message: types.Message, state: FSMContext):
         referral_code = referral_code[1:]  # Удаляем '=' если есть
 
     await process_start_command(message, referral_code, state, upsert_user)
-
 
 async def process_start_command(message: types.Message, referral_code: str, state: FSMContext,
                                 upsert_user_func) -> None:
@@ -67,10 +74,9 @@ async def process_start_command(message: types.Message, referral_code: str, stat
     except Exception as e:
         logging.error(f"Error while updating user data: {e}")
 
-
 async def upsert_user(user_id: int, username_tg: str, full_name: str, referral_code: str = None) -> None:
     logging.info(f"Attempting to upsert user: {user_id}")
-    async for session in get_async_session():
+    async with get_async_session() as session:
         try:
             user = await session.get(User, user_id)
             if user:
@@ -89,25 +95,21 @@ async def upsert_user(user_id: int, username_tg: str, full_name: str, referral_c
             logging.error(f"Database error while upserting user: {e}")
             await session.rollback()  # Откатываем сессию при ошибке
 
-
-app = FastAPI()
-
-@app.get("/user/{user_id}", response_model=dict)
+@app.get("/user/{user_id}")
 async def get_user(user_id: int, session: AsyncSession = Depends(get_async_session)):
-    async with session() as s:
-        result = await s.execute(select(User).filter(User.id == user_id))
-        user = result.scalars().first()
+    # Используем сессию напрямую без вызова
+    result = await session.execute(select(User).filter(User.id == user_id))
+    user = result.scalars().first()
 
-        if user is None:
-            raise HTTPException(status_code=404, detail="Пользователь не найден")
+    if user is None:
+        return {"full_name": "Имя не найдено", "balance": "Баланс не найден"}  # Возвращаем сообщения о ненайденных данных
 
-        return {
-            "full_name": user.full_name,
-            "balance": str(user.balance),  # Конвертируем в строку для JSON
-        }
+    return {
+        "full_name": user.full_name,
+        "balance": str(user.balance)  # Преобразуем в строку, если нужно
+    }
 
-
-# Запуск бота
+# Запуск бота и FastAPI
 async def main() -> None:
     logging.info("Bot is starting...")
     await dp.start_polling(bot)
