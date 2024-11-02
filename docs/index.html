@@ -20,8 +20,8 @@
 
     <div id="profileContent" class="hidden">
         <h2>Профиль пользователя</h2>
-        <p id="user_name"></p>
-        <p id="user_balance"></p>
+        <p id="user_name">имя</p>
+        <p id="user_balance">баланс</p>
         <button id="backButton">Назад</button>
     </div>
 
@@ -31,35 +31,37 @@
     let backButton = document.getElementById("backButton");
 
     profileButton.addEventListener("click", () => {
-        document.getElementById("mainContent").classList.add("hidden");
-        document.getElementById("profileContent").classList.remove("hidden");
+            // Переключаем видимость контента
+            document.getElementById("mainContent").classList.add("hidden");
+            document.getElementById("profileContent").classList.remove("hidden");
 
-        const userId = tg.initDataUnsafe.user.id;
+            // Получаем ID пользователя
+            const userId = tg.initDataUnsafe.user.id;
+            console.log('User ID:', userId); // Логируем ID
 
-        fetch(`http://127.0.0.1:8000/user/${userId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Ошибка сети');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Полученные данные:', data); // Логируем полученные данные
-            document.getElementById("user_name").innerText =
-                `Имя пользователя: ${data.full_name}`;
-            document.getElementById("user_balance").innerText =
-                `Баланс: ${data.balance}`;
-        })
-        .catch(error => {
-            console.error('Ошибка:', error);
-            document.getElementById("user_balance").innerText = "Не удалось загрузить баланс.";
+            // Делаем запрос к API
+            fetch(`http://127.0.0.1:8000/user/${userId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ошибка сети');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Полученные данные:', data); // Логируем полученные данные
+                    document.getElementById("full_name").innerText = `Имя пользователя: ${data.full_name}`;
+                    document.getElementById("balance").innerText = `Баланс: ${data.balance}`;
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    document.getElementById("user_balance").innerText = "Не удалось загрузить баланс.";
+                });
         });
-    });
 
-    backButton.addEventListener("click", () => {
-        document.getElementById("profileContent").style.display = "none";
-        document.getElementById("mainContent").style.display = "block";
-    });
+        backButton.addEventListener("click", () => {
+            document.getElementById("profileContent").classList.add("hidden");
+            document.getElementById("mainContent").classList.remove("hidden");
+        });
     </script>
 </body>
 </html>
