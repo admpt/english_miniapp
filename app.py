@@ -2,8 +2,9 @@ import json
 import logging
 import sys
 
+import uvicorn
 from aiogram.fsm.context import FSMContext
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from aiogram import Bot, Dispatcher, F, types
@@ -13,6 +14,7 @@ from fastapi import FastAPI, HTTPException
 import asyncio
 
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.middleware.cors import CORSMiddleware
 
 from database import User, get_async_session
@@ -45,7 +47,7 @@ async def process_start_command(message: types.Message, referral_code: str, stat
     logging.info(f"process_start_command {message.from_user.id}")
     logging.info(f"Referral code: {referral_code}")
 
-    web_app_url = "https://admpt.github.io/mini-app/"
+    web_app_url = "https://admpt.github.io/english_miniapp/"
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Открыть", web_app={"url": web_app_url})]
     ])
@@ -87,6 +89,24 @@ async def upsert_user(user_id: int, username_tg: str, full_name: str, referral_c
             logging.error(f"Database error while upserting user: {e}")
             await session.rollback()  # Откатываем сессию при ошибке
 
+
+app = FastAPI()
+
+@app.get("/user/{user_id}", response_model=dict)
+async def get_user(user_id: int, session: AsyncSession = Depends(get_async_session)):
+    async with session() as s:
+        result = await s.execute(select(User).filter(User.id == user_id))
+        user = result.scalars().first()
+
+        if user is None:
+            raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+        return {
+            "full_name": user.full_name,
+            "balance": str(user.balance),  # Конвертируем в строку для JSON
+        }
+
+
 # Запуск бота
 async def main() -> None:
     logging.info("Bot is starting...")
@@ -94,3 +114,4 @@ async def main() -> None:
 
 if __name__ == "__main__":
     asyncio.run(main())
+    uvicorn.run(app, host="127.0.0.1", port=8000)
