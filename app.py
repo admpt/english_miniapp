@@ -76,7 +76,9 @@ async def process_start_command(message: types.Message, referral_code: str, stat
 
 async def upsert_user(user_id: int, username_tg: str, full_name: str, referral_code: str = None) -> None:
     logging.info(f"Attempting to upsert user: {user_id}")
-    async with get_async_session() as session:
+
+    # Здесь мы используем await
+    async with await get_async_session() as session:
         try:
             user = await session.get(User, user_id)
             if user:
