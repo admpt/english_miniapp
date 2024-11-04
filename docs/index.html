@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mini-App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="style.css">
     <style>
         .hidden {
             display: none;
@@ -16,6 +16,7 @@
     <div id="mainContent">
         <h1>English Nova</h1>
         <button id="profileButton">Профиль</button>
+        <button id="start_learning_button">Начать обучение</button>
     </div>
 
     <div id="profileContent" class="hidden">
@@ -25,43 +26,64 @@
         <button id="backButton">Назад</button>
     </div>
 
+    <div id="start_learning_context" class="hidden">
+        <h2>Начало обучения</h2>
+        <button id="times">Времена</button>
+        <button id="irregular_verbs">Неправильные глаголы</button>
+        <button id="backToMainButton">Назад</button>
+    </div>
+
     <script>
-    let tg = window.Telegram.WebApp;
-    let profileButton = document.getElementById("profileButton");
-    let backButton = document.getElementById("backButton");
+        let tg = window.Telegram.WebApp;
 
-    profileButton.addEventListener("click", () => {
-        // Переключаем видимость контента
-        document.getElementById("mainContent").classList.add("hidden");
-        document.getElementById("profileContent").classList.remove("hidden");
+        document.getElementById("profileButton").addEventListener("click", () => {
+            document.getElementById("mainContent").classList.add("hidden");
+            document.getElementById("profileContent").classList.remove("hidden");
 
-        // Получаем ID пользователя
-        const userId = tg.initDataUnsafe.user.id;
-        console.log('User ID:', userId); // Логируем ID
+            const userId = tg.initDataUnsafe.user.id;
+            console.log('User ID:', userId);
 
-        // Делаем запрос к API
-        fetch(`http://127.0.0.1:8000/user/${userId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Ошибка сети');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Полученные данные:', data); // Логируем полученные данные
-                document.getElementById("full_name").innerText = `Имя пользователя: ${data.full_name}`; // Изменено
-                document.getElementById("balance").innerText = `Баланс: ${data.balance}`; // Изменено
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-                document.getElementById("full_name").innerText = "Не удалось загрузить имя."; // Изменено
-                document.getElementById("balance").innerText = "Не удалось загрузить баланс."; // Изменено
-            });
-    });
+            fetch(`http://127.0.0.1:8000/user/${userId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ошибка сети');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById("full_name").innerText = `Имя пользователя: ${data.full_name}`;
+                    document.getElementById("balance").innerText = `Баланс: ${data.balance}`;
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    document.getElementById("full_name").innerText = "Не удалось загрузить имя.";
+                    document.getElementById("balance").innerText = "Не удалось загрузить баланс.";
+                });
+        });
 
-        backButton.addEventListener("click", () => {
+        document.getElementById("backButton").addEventListener("click", () => {
             document.getElementById("profileContent").classList.add("hidden");
             document.getElementById("mainContent").classList.remove("hidden");
+        });
+
+        document.getElementById("start_learning_button").addEventListener("click", () => {
+            document.getElementById("mainContent").classList.add("hidden");
+            document.getElementById("start_learning_context").classList.remove("hidden");
+        });
+
+        document.getElementById("backToMainButton").addEventListener("click", () => {
+            document.getElementById("start_learning_context").classList.add("hidden");
+            document.getElementById("mainContent").classList.remove("hidden");
+        });
+
+        document.getElementById("times").addEventListener("click", () => {
+            // Здесь можно добавить логику для обучения временам
+            alert("Вы выбрали Времена");
+        });
+
+        document.getElementById("irregular_verbs").addEventListener("click", () => {
+            // Здесь можно добавить логику для обучения неправильным глаголам
+            alert("Вы выбрали Неправильные глаголы");
         });
     </script>
 </body>
