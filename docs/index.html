@@ -5,86 +5,195 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mini-App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- Подключаем React и ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!-- Подключаем Framer Motion для анимаций -->
+    <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
+
     <link rel="stylesheet" href="style.css">
-    <style>
-        .hidden {
-            display: none;
-        }
-    </style>
 </head>
 <body>
-    <div id="mainContent">
-        <h1>English Nova</h1>
-        <button id="profileButton">Профиль</button>
-        <button id="start_learning_button">Начать обучение</button>
-    </div>
-
-    <div id="profileContent" class="hidden">
-        <h2>Профиль пользователя</h2>
-        <p id="full_name">имя</p>
-        <p id="balance">баланс</p>
-        <button id="backButton">Назад</button>
-    </div>
-
-    <div id="start_learning_context" class="hidden">
-        <h2>Начало обучения</h2>
-        <button id="times">Времена</button>
-        <button id="irregular_verbs">Неправильные глаголы</button>
-        <button id="backToMainButton">Назад</button>
-    </div>
+    <!-- Контейнер для монтирования React приложения -->
+    <div id="root"></div>
 
     <script>
-        let tg = window.Telegram.WebApp;
+        const { useState, useEffect } = React;
+        const { motion } = window['framer-motion'];
 
-        document.getElementById("profileButton").addEventListener("click", () => {
-            document.getElementById("mainContent").classList.add("hidden");
-            document.getElementById("profileContent").classList.remove("hidden");
+        const App = () => {
+            const [currentPage, setCurrentPage] = useState('main'); // 'main', 'profile', 'startLearning'
+            const [userData, setUserData] = useState(null);
 
-            const userId = tg.initDataUnsafe.user.id;
-            console.log('User ID:', userId);
+            const tg = window.Telegram.WebApp;
 
-            fetch(`http://127.0.0.1:8000/user/${userId}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Ошибка сети');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    document.getElementById("full_name").innerText = `Имя пользователя: ${data.full_name}`;
-                    document.getElementById("balance").innerText = `Баланс: ${data.balance}`;
-                })
-                .catch(error => {
-                    console.error('Ошибка:', error);
-                    document.getElementById("full_name").innerText = "Не удалось загрузить имя.";
-                    document.getElementById("balance").innerText = "Не удалось загрузить баланс.";
-                });
-        });
+            useEffect(() => {
+                if (currentPage === 'profile') {
+                    const userId = tg.initDataUnsafe.user.id;
+                    console.log('User ID:', userId);
 
-        document.getElementById("backButton").addEventListener("click", () => {
-            document.getElementById("profileContent").classList.add("hidden");
-            document.getElementById("mainContent").classList.remove("hidden");
-        });
+                    // Замените на реальный адрес API, если нужно
+                    fetch(`http://127.0.0.1:8000/user/${userId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            setUserData(data);
+                        })
+                        .catch((error) => {
+                            console.error('Ошибка:', error);
+                            setUserData(null);
+                        });
+                }
+            }, [currentPage]);
 
-        document.getElementById("start_learning_button").addEventListener("click", () => {
-            document.getElementById("mainContent").classList.add("hidden");
-            document.getElementById("start_learning_context").classList.remove("hidden");
-        });
+            return (
+                <div className="app">
+                    {/* Главная страница */}
+                    {currentPage === 'main' && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <h1>English Nova</h1>
+                            <button onClick={() => setCurrentPage('profile')}>Профиль</button>
+                            <button onClick={() => setCurrentPage('startLearning')}>Начать обучение</button>
+                        </motion.div>
+                    )}
 
-        document.getElementById("backToMainButton").addEventListener("click", () => {
-            document.getElementById("start_learning_context").classList.add("hidden");
-            document.getElementById("mainContent").classList.remove("hidden");
-        });
+                    {/* Профиль пользователя */}
+                    {currentPage === 'profile' && (
+                        <motion.div
+                            initial={{ x: '-100vw' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '100vw' }}
+                            transition={{ type: 'spring', stiffness: 300 }}
+                        >
+                            <h2>Профиль пользователя</h2>
+                            <p>Имя: {userData ? userData.full_name : 'Загрузка...'}</p>
+                            <p>Баланс: {userData ? userData.balance : 'Загрузка...'}</p>
+                            <button onClick={() => setCurrentPage('main')}>Назад</button>
+                        </motion.div>
+                    )}
 
-        document.getElementById("times").addEventListener("click", () => {
-            // Здесь можно добавить логику для обучения временам
-            alert("Вы выбрали Времена");
-        });
+                    {/* Страница обучения */}
+                    {currentPage === 'startLearning' && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <h2>Начало обучения</h2>
+                            <button onClick={() => alert('Вы выбрали Времена')}>Времена</button>
+                            <button onClick={() => alert('Вы выбрали Неправильные глаголы')}>Неправильные глаголы</button>
+                            <button onClick={() => setCurrentPage('main')}>Назад</button>
+                        </motion.div>
+                    )}
+                </div>
+            );
+        };
 
-        document.getElementById("irregular_verbs").addEventListener("click", () => {
-            // Здесь можно добавить логику для обучения неправильным глаголам
-            alert("Вы выбрали Неправильные глаголы");
-        });
+        // Отображаем React приложение в контейнере с id="root"
+        ReactDOM.render(<App />, document.getElementById('root'));
     </script>
 </body>
 </html>
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="ru">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Mini-App</title>-->
+<!--    <script src="https://telegram.org/js/telegram-web-app.js"></script>-->
+
+<!--    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>-->
+<!--    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>-->
+<!--    <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>-->
+
+<!--    <link rel="stylesheet" href="style.css">-->
+<!--    <style>-->
+<!--        .hidden {-->
+<!--            display: none;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <div id="mainContent">-->
+<!--        <h1>English Nova</h1>-->
+<!--        <button id="profileButton">Профиль</button>-->
+<!--        <button id="start_learning_button">Начать обучение</button>-->
+<!--    </div>-->
+
+<!--    <div id="profileContent" class="hidden">-->
+<!--        <h2>Профиль пользователя</h2>-->
+<!--        <p id="full_name">имя</p>-->
+<!--        <p id="balance">баланс</p>-->
+<!--        <button id="backButton">Назад</button>-->
+<!--    </div>-->
+
+<!--    <div id="start_learning_context" class="hidden">-->
+<!--        <h2>Начало обучения</h2>-->
+<!--        <button id="times">Времена</button>-->
+<!--        <button id="irregular_verbs">Неправильные глаголы</button>-->
+<!--        <button id="backToMainButton">Назад</button>-->
+<!--    </div>-->
+
+<!--    <script>-->
+<!--        let tg = window.Telegram.WebApp;-->
+
+<!--        document.getElementById("profileButton").addEventListener("click", () => {-->
+<!--            document.getElementById("mainContent").classList.add("hidden");-->
+<!--            document.getElementById("profileContent").classList.remove("hidden");-->
+
+<!--            const userId = tg.initDataUnsafe.user.id;-->
+<!--            console.log('User ID:', userId);-->
+
+<!--            fetch(`http://127.0.0.1:8000/user/${userId}`)-->
+<!--                .then(response => {-->
+<!--                    if (!response.ok) {-->
+<!--                        throw new Error('Ошибка сети');-->
+<!--                    }-->
+<!--                    return response.json();-->
+<!--                })-->
+<!--                .then(data => {-->
+<!--                    document.getElementById("full_name").innerText = `Имя пользователя: ${data.full_name}`;-->
+<!--                    document.getElementById("balance").innerText = `Баланс: ${data.balance}`;-->
+<!--                })-->
+<!--                .catch(error => {-->
+<!--                    console.error('Ошибка:', error);-->
+<!--                    document.getElementById("full_name").innerText = "Не удалось загрузить имя.";-->
+<!--                    document.getElementById("balance").innerText = "Не удалось загрузить баланс.";-->
+<!--                });-->
+<!--        });-->
+
+<!--        document.getElementById("backButton").addEventListener("click", () => {-->
+<!--            document.getElementById("profileContent").classList.add("hidden");-->
+<!--            document.getElementById("mainContent").classList.remove("hidden");-->
+<!--        });-->
+
+<!--        document.getElementById("start_learning_button").addEventListener("click", () => {-->
+<!--            document.getElementById("mainContent").classList.add("hidden");-->
+<!--            document.getElementById("start_learning_context").classList.remove("hidden");-->
+<!--        });-->
+
+<!--        document.getElementById("backToMainButton").addEventListener("click", () => {-->
+<!--            document.getElementById("start_learning_context").classList.add("hidden");-->
+<!--            document.getElementById("mainContent").classList.remove("hidden");-->
+<!--        });-->
+
+<!--        document.getElementById("times").addEventListener("click", () => {-->
+<!--            // Здесь можно добавить логику для обучения временам-->
+<!--            alert("Вы выбрали Времена");-->
+<!--        });-->
+
+<!--        document.getElementById("irregular_verbs").addEventListener("click", () => {-->
+<!--            // Здесь можно добавить логику для обучения неправильным глаголам-->
+<!--            alert("Вы выбрали Неправильные глаголы");-->
+<!--        });-->
+<!--    </script>-->
+<!--</body>-->
+<!--</html>-->
