@@ -99,15 +99,16 @@ async def upsert_user(user_id: int, username_tg: str, full_name: str, referral_c
 
 @app.get("/user/{user_id}")
 async def get_user(user_id: int, session: AsyncSession = Depends(get_async_session)):
+    # Используем сессию напрямую без вызова
     result = await session.execute(select(User).filter(User.id == user_id))
     user = result.scalars().first()
 
     if user is None:
-        return {"full_name": "Имя не найдено", "balance": "Баланс не найден"}
+        return {"full_name": "Имя не найдено", "balance": "Баланс не найден"}  # Возвращаем сообщения о ненайденных данных
 
     return {
         "full_name": user.full_name,
-        "balance": str(user.balance)
+        "balance": str(user.balance)  # Преобразуем в строку, если нужно
     }
 
 # Запуск бота и FastAPI

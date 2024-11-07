@@ -43,7 +43,7 @@
             const userId = tg.initDataUnsafe.user.id;
             console.log('User ID:', userId);
 
-            fetch(`https://localhost/user/${userId}`)
+            fetch(`http://127.0.0.1:8000/user/${userId}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Ошибка сети');
