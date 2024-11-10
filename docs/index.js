@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom/client';  // Изменение импорта для React 18
+import ReactDOM from 'react-dom';
 import { motion } from 'framer-motion';
 import './style.css'; // Ваши стили
 
@@ -34,7 +34,21 @@ const App = () => {
   }, [currentPage]);
 
   return (
+
     <div>
+    <motion.img
+        src="https://e7.pngegg.com/pngimages/284/947/png-clipart-smiley-desktop-happiness-face-smiley-miscellaneous-face-thumbnail.png"
+        alt="Смайлик"
+        className="rotating-smiley"
+        transition={{
+            delay: 1,
+            duration: 2,
+            repeat: Infinity,
+            repeatType: 'reverse',
+        }}
+        }
+        animate={{rotate: 360}}
+      />
       {/* Основной контент */}
       {currentPage === 'main' && (
         <div id="mainContent">
@@ -87,6 +101,5 @@ const App = () => {
   );
 };
 
-// Рендерим приложение с использованием React 18 API
-const root = ReactDOM.createRoot(document.getElementById('root')); // Использование createRoot
-root.render(<App />); // Рендерим компонент через root.render()
+// Рендерим приложение
+ReactDOM.render(<App />, document.getElementById('root'));
