@@ -34,24 +34,22 @@ const App = () => {
   }, [currentPage]);
 
   return (
-
     <div>
-    <motion.img
-        src="https://e7.pngegg.com/pngimages/284/947/png-clipart-smiley-desktop-happiness-face-smiley-miscellaneous-face-thumbnail.png"
-        alt="Смайлик"
-        className="rotating-smiley"
-        transition={{
-            delay: 1,
-            duration: 2,
-            repeat: Infinity,
-            repeatType: 'reverse',
-        }}
-        }
-        animate={{rotate: 360}}
-      />
       {/* Основной контент */}
       {currentPage === 'main' && (
         <div id="mainContent">
+          {/* Вращающийся смайлик по ссылке */}
+          <motion.img
+            src="https://e7.pngegg.com/pngimages/284/947/png-clipart-smiley-desktop-happiness-face-smiley-miscellaneous-face-thumbnail.png"
+            alt="Смайлик"
+            className="rotating-smiley"
+            animate={{ rotate: 360 }}  // Вращение смайлика
+            transition={{
+              repeat: Infinity,  // Бесконечное повторение
+              duration: 2,       // Время одного оборота
+              ease: "linear",    // Линейная анимация
+            }}
+          />
           <motion.h1
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

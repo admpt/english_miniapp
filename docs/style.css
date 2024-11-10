@@ -11,6 +11,15 @@ h1, h2 {
     color: #4a90e2;
 }
 
+/* Стили для вращающегося смайлика */
+.rotating-smiley {
+  position: fixed;  /* Закрепляем на экране */
+  top: 10px;        /* Расстояние от верхней границы */
+  left: 10px;       /* Расстояние от левой границы */
+  width: 50px;      /* Размер смайлика */
+  height: 50px;     /* Размер смайлика */
+}
+
 button {
     display: block;
     margin: 10px auto;
