@@ -12,6 +12,7 @@ from fastapi import FastAPI, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.middleware.cors import CORSMiddleware
+from starlette.staticfiles import StaticFiles
 
 from database import User, get_async_session
 from my_token import TOKEN
@@ -110,6 +111,8 @@ async def get_user(user_id: int, session: AsyncSession = Depends(get_async_sessi
         "full_name": user.full_name,
         "balance": str(user.balance)  # Преобразуем в строку, если нужно
     }
+
+app.mount("/docs", StaticFiles(directory="docs"), name="docs")
 
 # Запуск бота и FastAPI
 async def main() -> None:
