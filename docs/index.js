@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom/client';  // Импортируем из 'react-dom/client'
+import ReactDOM from 'react-dom/client';  // Изменение импорта для React 18
 import { motion } from 'framer-motion';
 import './style.css'; // Ваши стили
 
@@ -24,25 +24,12 @@ const App = () => {
   // Инициализация данных пользователя
   useEffect(() => {
     if (currentPage === 'profile') {
-      // Проверяем, что приложение работает в WebView Telegram
-      if (window.Telegram && window.Telegram.WebApp) {
-        const tg = window.Telegram.WebApp;
+      const tg = window.Telegram.WebApp;
+      const userId = tg.initDataUnsafe.user.id;
 
-        // Проверка на доступность данных
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-          const userId = tg.initDataUnsafe.user.id;
-
-          fetchUserData(userId).then((data) => {
-            setUserData(data);
-          }).catch(error => {
-            console.error("Ошибка при загрузке данных пользователя:", error);
-          });
-        } else {
-          console.error("Не удалось найти данные пользователя в WebApp.");
-        }
-      } else {
-        console.log("Приложение не запущено в Telegram WebView.");
-      }
+      fetchUserData(userId).then((data) => {
+        setUserData(data);
+      });
     }
   }, [currentPage]);
 
@@ -100,6 +87,6 @@ const App = () => {
   );
 };
 
-// Рендерим приложение с использованием createRoot
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+// Рендерим приложение с использованием React 18 API
+const root = ReactDOM.createRoot(document.getElementById('root')); // Использование createRoot
+root.render(<App />); // Рендерим компонент через root.render()
