@@ -1,99 +1,41 @@
-/* Общие стили */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
+    color: #333;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    flex-direction: column;
-    overflow: hidden; /* чтобы избежать полос прокрутки при анимациях */
 }
 
-/* Заголовки */
 h1, h2 {
-    font-size: 2rem;
-    color: #333;
     text-align: center;
+    color: #4a90e2;
 }
 
-/* Стили для кнопок */
 button {
-    background-color: #4CAF50;
-    color: white;
-    font-size: 1rem;
+    display: block;
+    margin: 10px auto;
     padding: 10px 20px;
-    margin: 10px;
+    background-color: #4a90e2;
+    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 16px;
 }
 
 button:hover {
-    background-color: #45a049;
-    transform: scale(1.05); /* Кнопка немного увеличивается при наведении */
+    background-color: #357ab8;
 }
 
-button:active {
-    background-color: #388e3c;
-    transform: scale(0.95); /* Кнопка немного сжимается при нажатии */
-}
-
-button:focus {
-    outline: none;
-}
-
-/* Стили для скрытых блоков с плавным переходом */
 .hidden {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.5s ease, visibility 0s linear 0.5s; /* скрытие с плавным исчезанием */
+    display: none;
 }
 
-.hidden.show {
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.5s ease; /* Плавное появление */
-}
-
-/* Контейнеры */
 #mainContent, #profileContent, #start_learning_context {
-    background-color: white;
-    border-radius: 10px;
+    max-width: 400px;
+    margin: 20px auto;
     padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    text-align: center;
-    transform: scale(0.8);
-    opacity: 0;
-    transition: transform 0.4s ease, opacity 0.4s ease;
-}
-
-#mainContent.show, #profileContent.show, #start_learning_context.show {
-    transform: scale(1);
-    opacity: 1;
-}
-
-/* Стили для профиля */
-#full_name, #balance {
-    font-size: 1.2rem;
-    color: #333;
-    margin: 15px 0;
-}
-
-/* Стили для контекста обучения */
-#start_learning_context button {
-    background-color: #2196F3;
-    transition: background-color 0.3s ease;
-}
-
-#start_learning_context button:hover {
-    background-color: #1976D2;
-}
-
-#start_learning_context button:active {
-    background-color: #1565C0;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
