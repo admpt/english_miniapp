@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';  // Импортируем из 'react-dom/client'
 import { motion } from 'framer-motion';
 import './style.css'; // Ваши стили
 
@@ -24,12 +24,25 @@ const App = () => {
   // Инициализация данных пользователя
   useEffect(() => {
     if (currentPage === 'profile') {
-      const tg = window.Telegram.WebApp;
-      const userId = tg.initDataUnsafe.user.id;
+      // Проверяем, что приложение работает в WebView Telegram
+      if (window.Telegram && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
 
-      fetchUserData(userId).then((data) => {
-        setUserData(data);
-      });
+        // Проверка на доступность данных
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+          const userId = tg.initDataUnsafe.user.id;
+
+          fetchUserData(userId).then((data) => {
+            setUserData(data);
+          }).catch(error => {
+            console.error("Ошибка при загрузке данных пользователя:", error);
+          });
+        } else {
+          console.error("Не удалось найти данные пользователя в WebApp.");
+        }
+      } else {
+        console.log("Приложение не запущено в Telegram WebView.");
+      }
     }
   }, [currentPage]);
 
@@ -87,5 +100,6 @@ const App = () => {
   );
 };
 
-// Рендерим приложение
-ReactDOM.render(<App />, document.getElementById('root'));
+// Рендерим приложение с использованием createRoot
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
