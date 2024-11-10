@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { motion } from 'framer-motion';
 import './style.css'; // Ваши стили
+import smileImg from './smile.png'; // Импортируем смайлик
 
 // Функция для получения данных пользователя
 const fetchUserData = async (userId) => {
@@ -38,18 +39,6 @@ const App = () => {
       {/* Основной контент */}
       {currentPage === 'main' && (
         <div id="mainContent">
-          {/* Вращающийся смайлик по ссылке */}
-          <motion.img
-            src="https://e7.pngegg.com/pngimages/284/947/png-clipart-smiley-desktop-happiness-face-smiley-miscellaneous-face-thumbnail.png"
-            alt="Смайлик"
-            className="rotating-smiley"
-            animate={{ rotate: 360 }}  // Вращение смайлика
-            transition={{
-              repeat: Infinity,  // Бесконечное повторение
-              duration: 2,       // Время одного оборота
-              ease: "linear",    // Линейная анимация
-            }}
-          />
           <motion.h1
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -63,6 +52,18 @@ const App = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 1 }}
           >
+            {/* Вращающийся смайлик по ссылке */}
+            <motion.img
+              src={smileImg}  // Используем импортированное изображение
+              alt="Смайлик"
+              className="rotating-smiley"
+              animate={{ rotate: 360 }}  // Вращение смайлика
+              transition={{
+                repeat: Infinity,  // Бесконечное повторение
+                duration: 2,       // Время одного оборота
+                ease: "linear",    // Линейная анимация
+              }}
+            />
             Профиль
           </motion.button>
           <motion.button
